@@ -231,11 +231,27 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    var merger = [].slice.call(arguments,1); //copies obj into merger object
+    _.each(merger, function(obj2){ //"for each" value in merger object, execute
+      _.each(obj2, function(val, ind){ //"for each" value in pass in ind and val @ ind 
+        obj[ind] = val; //changes/extends value at each ind to val in obj
+      });
+    });
+    return obj; //returns new first argument
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var merger = [].slice.call(arguments,1);
+    _.each(merger, function(obj2){
+      _.each(obj2, function(val, ind){
+        if(!obj.hasOwnProperty(ind)){ //if ind @ obj already has a value, skip
+          obj[ind] = val;
+        }
+      });
+    });
+    return obj;
   };
 
 
