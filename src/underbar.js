@@ -334,9 +334,9 @@
     var temp = 0; //initialize temp variable
     while(inp-- > 0){
       rand = Math.floor(Math.random()*inp);
-      temp = copy[inp];
-      copy[inp] = copy[rand];
-      copy[rand] = temp;
+      temp = copy[inp]; //temp holds the current index value
+      copy[inp] = copy[rand]; //index value in copy gets allocated value in random slot
+      copy[rand] = temp; //above slot in copy array is allocated current index value, so values don't change
     }
     return copy;
   };
