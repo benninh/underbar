@@ -235,7 +235,7 @@
     _.each(merger, function(obj2){ //"for each" value in merger object, execute
       _.each(obj2, function(val, ind){ //"for each" value in pass in ind and val @ ind 
         obj[ind] = val; //changes/extends value at each ind to val in obj
-      });
+      });               //overwrites first argument's values
     });
     return obj; //returns new first argument
   };
@@ -243,11 +243,12 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
-    var merger = [].slice.call(arguments,1);
-    _.each(merger, function(obj2){
-      _.each(obj2, function(val, ind){
-        if(!obj.hasOwnProperty(ind)){ //if ind @ obj already has a value, skip
-          obj[ind] = val;
+    var merger = [].slice.call(arguments,1); //merger = [{arguments.1},{arguments.2},...]
+    //example merger = [{a:1,b:2,c:3}]
+    _.each(merger, function(obj2){ //obj2 = {arguments.1} in first pass, increment
+      _.each(obj2, function(val, ind){ // val = a in first pass, ind is just the index 
+        if(!obj.hasOwnProperty(ind)){ //if index @ obj already has a value, don't overwrite
+          obj[ind] = val; //write val at index if index does not hold val (a,b,c)
         }
       });
     });
@@ -295,6 +296,11 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var mem = {};
+    return function(){
+      var results = JSON.stringify(arguments);
+      return mem[results] = mem[results] || func.apply(this,arguments);
+    };
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -304,6 +310,10 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var arg = [].slice.call(arguments,2);
+    return setTimeout(function(){
+      func.apply(this,arg);
+    }, wait);
   };
 
 
@@ -318,6 +328,17 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var copy = array.slice(); //copy input array
+    var inp = array.length; //keeps track of input array index size
+    var rand = 0; //initialize random variable
+    var temp = 0; //initialize temp variable
+    while(inp-- > 0){
+      rand = Math.floor(Math.random()*inp);
+      temp = copy[inp];
+      copy[inp] = copy[rand];
+      copy[rand] = temp;
+    }
+    return copy;
   };
 
 
