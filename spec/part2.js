@@ -402,7 +402,7 @@
 
     describe('memoize', function() {
       var add, memoAdd;
-
+     
       beforeEach(function() {
         add = function(a, b) {
           return a + b;

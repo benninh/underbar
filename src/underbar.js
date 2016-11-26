@@ -33,6 +33,7 @@
   // return just the first element.
   _.first = function(array, n) {
     return n === undefined ? array[0] : array.slice(0, n);
+    //reads if n === undefined return array[0], else return array.slice(0,n)
   };
 
   // Like first, but for the last elements. If n is undefined, return just the
@@ -42,11 +43,17 @@
       return array[array.length-1];
     }
     else if(n < array.length){
-      return array.splice(array.length - n);
+      return array.slice(array.length - n);
     }
     else{
       return array;
     }
+
+    //Ramsha Mustaq's Implementation, utilizing ternary ?:
+    /*if(n === 0){
+      return [];
+    }
+    return n === undefined ? array.[array.length - 1] : array.slice(array.length - n)*/
   };
 
   // Call iterator(value, key, collection) for each element of collection.
@@ -55,12 +62,12 @@
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
-    if(Array.isArray(collection)){
-        for(var i = 0; i<collection.length; i++)
-          iterator(collection[i],i,collection)
+    if(Array.isArray(collection)){ //determines if collection is an array
+        for(var i = 0; i<collection.length; i++) //invoke iterator through each element in collection
+          iterator(collection[i],i,collection) //provides to value, index, and original collection
     }
-    else{
-        for(var i in collection){
+    else{ //determine if collection is and object
+        for(var i in collection){ //invoke iterator through each element in collection
           iterator(collection[i],i,collection);
         }
     }
@@ -85,19 +92,28 @@
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
-    var fil = [];
-    _.each(collection, function(ele){
-        if(test(ele)){
-          fil.push(ele);
+    var filt = []; //return array
+    _.each(collection, function(ele){ //each element in collection
+        if(test(ele)){                //that passes the function test
+          filt.push(ele);             //pushed to return array
         }
-    })
-    return fil;
+    });
+    return filt;
+
+    // THIS CODE IS REMIMPLEMENTING _.each()
+    /*for(var i = 0; i < collection.length; i++){
+      if(test(collection[i])){
+        filt.push(i);
+      }
+    }
+    return filt;
+    */
   };
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
-    return _.filter(collection, function(ele){
-      return !test(ele);  
+    return _.filter(collection, function(ele){ //filter returns the array
+      return !test(ele); //when the element passes the test, you want to NOT return that element
     })
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
@@ -105,13 +121,17 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array) {
-    var uniArray = [];
-    _.each(array, function(ele){
-      if(_.indexOf(uniArray, ele) === -1){
-        uniArray.push(ele);
+    var uniArray = []; //return array
+    _.each(array, function(ele){ //for each element in passed in array
+      if(_.indexOf(uniArray, ele) === -1){ //if ele does not exist in uniArray
+        uniArray.push(ele); //push ele to uniArray
       }
-    })
+    });
     return uniArray;
+
+  /*var uniq = Array.from(new Set(array));
+
+   return uniq;*/
   };
 
 
@@ -121,8 +141,8 @@
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
     var mapArray = [];
-    _.each(collection, function(e){
-      mapArray.push(iterator(e))
+    _.each(collection, function(e){ //for each element in collection
+      mapArray.push(iterator(e)) //invoke iterator on element and push to mapArray
     });
     return mapArray;
   };
@@ -169,11 +189,11 @@
     var temp = true; //initiate a boolean check variable
     _.each(collection, function(ele){ //for each element of collection array
       if(accumulator === undefined && temp){ //if accumulator not passed
-        accumulator = ele;
-        temp = false; //allows continuation of iterator call, even when undefined
+        accumulator = ele; //accumulator is set to the first element in collection
+        temp = false; //set check to false to allow continuation of iterator call after undefined accumulator has been handled
       }
       else{
-        accumulator = iterator(accumulator, ele);
+        accumulator = iterator(accumulator, ele); //invokes iterator on accumulator for current element
       }
     });
     return accumulator;
@@ -183,32 +203,38 @@
   _.contains = function(collection, target) {
     // TIP: Many iteration problems can be most easily expressed in
     // terms of reduce(). Here's a freebie to demonstrate!
-    return _.reduce(collection, function(wasFound, item) {
-      if (wasFound) {
+    return _.reduce(collection, function(wasFound, item) { //iterate through collection
+      if (wasFound) { //wasFound === accumulator
         return true;
       }
-      return item === target;
-    }, false);
+      return item === target; //return true if current item === target
+    }, false);//accumulator default false
   };
 
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
-    iterator = iterator || _.identity;
+    iterator = iterator || _.identity; //iterator is the function or the _.identity function
     return _.reduce(collection, function(pass,val){
-      return !!iterator(val) && pass;
-    }, true);
+      return !!iterator(val) && pass; //returns the boolean'd iterated val compared to pass(default true)
+    }, true); //default pass to true to check if every value iterated evaluates to true
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
-    iterator = iterator || _.identity;
-    return !_.every(collection, function(val) {
-      return !iterator(val);
+    iterator = iterator || _.identity; //iterator is the function or the _.identity function
+    return !_.every(collection, function(val) { //for every val in collection -- convert boolean back to original value
+      return !iterator(val); //invoke iterator on it -- convert iterator to boolean once
     });
+    /*return _.reduce(collection, function(accumulator, items){
+      if(accumulator){ //check accumulator
+        return true;
+      }
+      return !!iterator(items);
+    }, false);*/
   };
 
 
@@ -230,7 +256,7 @@
   //   }, {
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
-  _.extend = function(obj) {
+  /*_.extend = function(obj) {
     var merger = [].slice.call(arguments,1); //copies obj into merger object
     _.each(merger, function(obj2){ //"for each" value in merger object, execute
       _.each(obj2, function(val, ind){ //"for each" value in pass in ind and val @ ind 
@@ -238,12 +264,31 @@
       });               //overwrites first argument's values
     });
     return obj; //returns new first argument
+  };*/
+  _.extend = function(obj) {
+    // foreach value in arguments passed [x,a,b]
+    // the first argument is properties
+    // the properties will have their own value 
+    // foreach value of the properties [1,2,3]
+    // we are going to add the property: value to the object that being pass into the function
+    //object.name = "benson"
+    _.each(arguments, function(value, key){
+      _.each(value, function(values, properties){
+        obj[properties] = values;
+      })
+    });
+    return obj; //return extended obj
   };
+  /* var extended = _.extend({ x: 1 }, { a: 2 }, { b:3 });
+        expect(extended).to.eql({ x: 1, a: 2, b: 3 }); */
+
+  // Like extend, but doesn't ever overwrite a key that already
+  // exists in obj
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
-    var merger = [].slice.call(arguments,1); //merger = [{arguments.1},{arguments.2},...]
+    /*var merger = [].slice.call(arguments,1); //merger = [{arguments.1},{arguments.2},...]
     //example merger = [{a:1,b:2,c:3}]
     _.each(merger, function(obj2){ //obj2 = {arguments.1} in first pass, increment
       _.each(obj2, function(val, ind){ // val = a in first pass, ind is just the index 
@@ -251,7 +296,19 @@
           obj[ind] = val; //write val at index if index does not hold val (a,b,c)
         }
       });
-    });
+    });*/
+    // for each property in arguments passed
+    // for each value of properties passed
+    // extend without overwriting values
+    // if obj.property is undefined, obj[property] = value;
+    // returns mutated obj
+    _.each(arguments, function(value,key){
+      _.each(value, function(values, properties){
+        if(!obj.hasOwnProperty(properties)){
+          obj[properties] = values;
+        }
+      })
+    })
     return obj;
   };
 
@@ -278,7 +335,7 @@
     return function() {
       if (!alreadyCalled) {
         // TIP: .apply(this, arguments) is the standard way to pass on all of the
-        // infromation from one function call to another.
+        // information from one function call to another.
         result = func.apply(this, arguments);
         alreadyCalled = true;
       }
@@ -310,7 +367,8 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
-    var arg = [].slice.call(arguments,2);
+    var arg = [].slice.call(arguments,2); //arg array holds arguments from 2 index onwards -- after wait
+    //console.log(arg); //using [].slice.call(arguments,x) fills the array with the arguments, sliced at index x
     return setTimeout(function(){
       func.apply(this,arg);
     }, wait);
