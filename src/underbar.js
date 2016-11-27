@@ -401,7 +401,7 @@
     var inp = array.length; //keeps track of input array index size
     var rand = 0; //initialize random variable
     var temp = 0; //initialize temp variable
-    while(inp-- > 0){
+   while(inp-- > 0){
       rand = Math.floor(Math.random()*inp);
       temp = copy[inp]; //temp holds the current index value
       copy[inp] = copy[rand]; //index value in copy gets allocated value in random slot
@@ -409,6 +409,26 @@
     }
     return copy;
   };
+/*  _.shuffle = function(array) {
+    // make copy of input array
+    var copy = array.slice() //[[array]].slice.call(arguments); = array.slice();
+    // make empty shuffle array
+    var shuffledArray = [];
+    // use Math.random (gives decimal from 0-1)
+    // multiply random number by input array length
+    // use Math.floor to convert to whole number 
+    var rand = Math.floor(Math.random()*copy.length);
+    
+    while(!(shuffledArray.length === array.length)){
+      shuffledArray.push(copy[rand]);
+      copy.splice(rand,1);
+      console.log(copy);
+      rand = Math.floor(Math.random()*copy.length);
+    };
+    //return shuffled Array
+    return shuffledArray;
+  };
+  */ //KEVIN'S CODE
 
 
   /**
@@ -421,14 +441,52 @@
 
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
-  _.invoke = function(collection, functionOrKey, args) {
+ _.invoke = function(collection, functionOrKey, args) {
+    //each element of collection, invoke functionOrKey, using args
+    // ['dog', 'cat'] ---> ['god', 'tac']
+    if(typeof(functionOrKey) === 'string'){
+      var string = ""; //convert string into its corresponding method
+      var methodFind = string[functionOrKey]; //methodFind() --> .toUpperCase()
+    //  collection.methodFind();
+      return _.map(collection, function(elements){
+        return methodFind.apply(elements,args);
+      });
+    }
+    else{
+      return _.map(collection, function(elements){
+      //console.log(args);
+        return functionOrKey.apply(elements, args);
+      });
+    }
   };
+  // info
+  // apply expects parameters in an array.
+  // so apply is to attach a function to an object and uses it 
+  // functionName.apply(targetObj, functionParams);
+
 
   // Sort the object's values by a criterion produced by an iterator.
   // If iterator is a string, sort objects by that property with the name
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
-  _.sortBy = function(collection, iterator) {
+  _.sortBy = function(collection, iterator) { // NOT WORKING YET //
+  	/*//initialize temp storage variable
+      var temp = 0;
+      //get length of input collection
+      var inpLength = collection.length;
+      //forEach the iterated(sorted) values of collection
+      return _.map(collection, function(elements){
+        //loop through the collection and do the following
+         //start at index currentIndex 0 of collection
+         for(var j = _.indexOf(collection,elements)+1; j < inpLength; j++){
+            //check collection[j] against temp, which holds collection[0] in first iteration
+            if(elements > collection[j]){//if greater, swap
+              temp = elements;
+              elements = collection[j];
+              collection[j] = temp;
+            }
+         }
+     };*/
   };
 
   // Zip together two or more arrays with elements of the same index
@@ -437,6 +495,44 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+	var zippedArray = []; //initialize empty zip array
+	var argArray = [].slice.call(arguments); //put all array arguments into a 2x2 array
+	var largestArray = _.reduce(argArray, function(arrLength, item){ //return the length of the longest array
+							if(item.length>arrLength){
+								arrLength = item.length;
+							}
+							return arrLength;
+						},0);
+	//console.log(largestArray);
+	_.each(argArray, function(elements){
+		zippedArray.push([]);
+	}) //give zippedArray empty arrays for indexing
+	
+	/*for(var h = 0; h<largestArray;h++){
+		zippedArray.push([]);
+	}*/
+
+	/*_.each(argArray, function(elements){
+		_.each(elements, function(toZip){
+			zippedArray.push(toZip);
+		})
+	})*/
+
+	//console.log(zippedArray);
+	for(var i = 0; i < largestArray; i++){ //iterate through first item of each array in arguments
+		//console.log(i);
+		for(var j = 0; j < largestArray; j++){ //iterate through each argument
+			//console.log(j);
+			//if value is undefined, set undefined
+			if(argArray[j][i]){
+         		zippedArray[i][j] = argArray[j][i];
+        	}
+        	else{
+          		zippedArray[i][j] = undefined;
+        	}
+		}
+	}
+	return zippedArray;
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
