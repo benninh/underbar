@@ -210,7 +210,9 @@
       return item === target; //return true if current item === target
     }, false);//accumulator default false
   };
-
+/*  var testCase = _.reduce([1,2,3,4,5], function(total,item){
+      console.log(total);
+      return total+item});*/
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
@@ -353,11 +355,16 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
-    var mem = {};
+    var mem = {}; //initialize empty object
     return function(){
-      var results = JSON.stringify(arguments);
+      var results = JSON.stringify(arguments); //results holds a stringified func, passed into mem as a property
       return mem[results] = mem[results] || func.apply(this,arguments);
     };
+    //using add example
+    // 1st iteration of memoAdd(1,2) gives mem = {{"0":1, "1":2}:3}
+    // 2nd iteration of memoAdd(1,2) gives mem["{"0":1, "1":2}"] = mem [{"0":1, "1":2}]
+    // next iteration of memoAdd(2,3) gives mem[{"0":2, "1":3}] = add(2,3)
+    // mem = {{"0":1, "1":2}:3, {"0":2, "1":3}:5}
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -369,9 +376,13 @@
   _.delay = function(func, wait) {
     var arg = [].slice.call(arguments,2); //arg array holds arguments from 2 index onwards -- after wait
     //console.log(arg); //using [].slice.call(arguments,x) fills the array with the arguments, sliced at index x
+    //var newArray = [1,2,3,4,5]
+    //newArray.slice(1,3); -> [2,3,4]
+    // arg = [a,b,c]
     return setTimeout(function(){
       func.apply(this,arg);
     }, wait);
+    //return setTimeout(func.apply(this,arg), wait);
   };
 
 
