@@ -357,8 +357,9 @@
   _.memoize = function(func) {
     var mem = {}; //initialize empty object
     return function(){
+      var inputs = JSON.stringify
       var results = JSON.stringify(arguments); //results holds a stringified func, passed into mem as a property
-      return mem[results] = mem[results] || func.apply(this,arguments);
+      return mem[results] = (mem[results] !== undefined) || func.apply(this,arguments);
     };
     //using add example
     // 1st iteration of memoAdd(1,2) gives mem = {{"0":1, "1":2}:3}
@@ -469,24 +470,20 @@
   // If iterator is a string, sort objects by that property with the name
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
-  _.sortBy = function(collection, iterator) { // NOT WORKING YET //
-  	/*//initialize temp storage variable
-      var temp = 0;
-      //get length of input collection
-      var inpLength = collection.length;
-      //forEach the iterated(sorted) values of collection
-      return _.map(collection, function(elements){
-        //loop through the collection and do the following
-         //start at index currentIndex 0 of collection
-         for(var j = _.indexOf(collection,elements)+1; j < inpLength; j++){
-            //check collection[j] against temp, which holds collection[0] in first iteration
-            if(elements > collection[j]){//if greater, swap
-              temp = elements;
-              elements = collection[j];
-              collection[j] = temp;
-            }
-         }
-     };*/
+  _.sortBy = function(collection, iterator) {
+  	//return the sorted collection
+  	return collection.sort(function(a,b){
+  		//check if passed-in iterator is a function or method
+  		if(typeof(iterator) === 'function'){
+  			return iterator(a) - iterator(b); //run function iterator on a and b, then compare
+  		}
+  		else if(typeof(iterator) === 'string'){
+  			return a[iterator] - b[iterator]; //apply method to a and b, then compre
+  		}
+  		// Array.protoype.sort() handles undefined values for you, sorting them all to the end
+  		// sorts when conditions return true or stays same when returns false
+  		// calling a['length'] is another way of calling a.length, therefor can be used in this context
+  	})
   };
 
   // Zip together two or more arrays with elements of the same index
@@ -540,11 +537,35 @@
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+  	result = []; //reset result to an empty array
+  	
+  	// best way uses recrusion
+  	// declare function that iterates through the recrusion
+  	// when doing recursion, declare the function so that it may call itself within the function
+  	// set edge cases to stop the recursion process when done to avoid infinite loop
+  	// to understand recursion on a basic level, review the exponent recursion implementation
+
+  	var deepArray = function(array){
+  		_.each(array,function(item){
+  			if(Array.isArray(item)){
+  				deepArray(item);
+  			}
+  			else{
+  				result.push(item);
+  			}
+  		})
+  	}
+
+  	//call our recursion function
+  	deepArray(nestedArray);
+  	//return result
+    return result;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+
   };
 
   // Take the difference between one array and a number of other arrays.
